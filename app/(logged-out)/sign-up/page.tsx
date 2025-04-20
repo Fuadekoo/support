@@ -199,6 +199,18 @@ export default function SignUpPage() {
                 </>
               )}
 
+              <FormField
+                control={form.control}
+                name="dob"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel> Employees</FormLabel>
+                    <FormControl>calender</FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className="mt-4">
                 Sign Up
               </Button>
