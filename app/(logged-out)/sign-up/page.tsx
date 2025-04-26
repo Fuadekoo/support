@@ -1,5 +1,14 @@
 "use client";
 import React from "react";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+
 import {
   Card,
   CardContent,
@@ -31,6 +40,7 @@ import { PersonStandingIcon } from "lucide-react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 
 const formSchema = z
   .object({
@@ -45,6 +55,7 @@ const formSchema = z
         today.getMonth(),
         today.getDate()
       );
+      return date <= eighteenYearsAgo;
     }, "you must be at least 18 years old"),
     //   password: z.string().min(6, "password must be at least 6 characters"),
   })
@@ -83,9 +94,12 @@ export default function SignUpPage() {
 
   const handleSubmit = () => {
     console.log("Form Data:", form.getValues());
+    console.log("hello");
   };
 
   const accountType = form.watch("accountType");
+  const dobFormDate = new Date();
+  dobFormDate.setFullYear(dobFormDate.getFullYear() - 120);
 
   return (
     <>
@@ -203,15 +217,45 @@ export default function SignUpPage() {
                 control={form.control}
                 name="dob"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel> Employees</FormLabel>
-                    <FormControl>calender</FormControl>
+                  <FormItem className="flex flex-col gap-2 pt-2">
+                    <FormLabel> date of birth</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className="normal-case flex justify-between pr-1"
+                          >
+                            {!!field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>pick a date</span>
+                            )}
+
+                            <CalendarIcon className="opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          defaultMonth={field.value}
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          fixedWeeks
+                          weekStartsOn={1}
+                          fromDate={dobFormDate}
+                          // toDate={new Date()}
+                          captionLayout="dropdown-buttons"
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type="submit" className="mt-4">
+              <Button type="submit" className="mt-4" onClick={handleSubmit}>
                 Sign Up
               </Button>
             </form>
