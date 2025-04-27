@@ -1,11 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import * as React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker, useNavigation } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // MAKE SURE YOU HAVE SELECT COMPONENTS
 
 function Calendar({
   className,
@@ -20,7 +27,7 @@ function Calendar({
       classNames={{
         months: "flex flex-col sm:flex-row gap-2",
         month: "flex flex-col gap-4",
-        caption: "flex justify-center pt-1 relative items-center w-full",
+        caption: "flex justify-center pt-1 relative items-center w-full gap-2",
         caption_label: "text-sm font-medium",
         nav: "flex items-center gap-1",
         nav_button: cn(
@@ -66,10 +73,75 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
+        Caption: CustomCaption, // ⭐ USE CUSTOM CAPTION
       }}
       {...props}
     />
-  )
+  );
 }
 
-export { Calendar }
+// ⭐ CUSTOM CAPTION COMPONENT
+function CustomCaption({ displayMonth }: { displayMonth: Date }) {
+  const { goToMonth } = useNavigation();
+
+  const months = Array.from({ length: 12 }, (_, i) =>
+    new Date(0, i).toLocaleString("default", { month: "long" })
+  );
+
+  const years = Array.from(
+    { length: 20 },
+    (_, i) => new Date().getFullYear() - 10 + i
+  );
+
+  function handleMonthChange(month: number) {
+    const newDate = new Date(displayMonth);
+    newDate.setMonth(month);
+    goToMonth(newDate);
+  }
+
+  function handleYearChange(year: number) {
+    const newDate = new Date(displayMonth);
+    newDate.setFullYear(year);
+    goToMonth(newDate);
+  }
+
+  return (
+    <div className="flex gap-2">
+      {/* MONTH SELECT */}
+      <Select
+        onValueChange={(value) => handleMonthChange(Number(value))}
+        defaultValue={displayMonth.getMonth().toString()}
+      >
+        <SelectTrigger className="w-[120px]">
+          <SelectValue placeholder="Month" />
+        </SelectTrigger>
+        <SelectContent>
+          {months.map((month, idx) => (
+            <SelectItem key={idx} value={idx.toString()}>
+              {month}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* YEAR SELECT */}
+      <Select
+        onValueChange={(value) => handleYearChange(Number(value))}
+        defaultValue={displayMonth.getFullYear().toString()}
+      >
+        <SelectTrigger className="w-[100px]">
+          <SelectValue placeholder="Year" />
+        </SelectTrigger>
+        <SelectContent>
+          {years.map((year) => (
+            <SelectItem key={year} value={year.toString()}>
+              {year}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+export { Calendar };

@@ -41,26 +41,17 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { PasswordInput } from "@/components/ui/password-input";
 
-const formSchema = z
+const accountTypeSchema = z
   .object({
-    email: z.string().email("invalid email"),
     accountType: z.enum(["personal", "Company"]),
     companyName: z.string().optional(),
     numberOfEmployees: z.coerce.number().optional(),
-    dob: z.date().refine((date) => {
-      const today = new Date();
-      const eighteenYearsAgo = new Date(
-        today.getFullYear() - 18,
-        today.getMonth(),
-        today.getDate()
-      );
-      return date <= eighteenYearsAgo;
-    }, "you must be at least 18 years old"),
-    //   password: z.string().min(6, "password must be at least 6 characters"),
   })
   .superRefine((data, ctx) => {
-    if ((data.accountType === "Company", !data.companyName)) {
+    // CHECK COMPANY NAME IF ACCOUNT TYPE IS COMPANY
+    if (data.accountType === "Company" && !data.companyName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["companyName"],
@@ -68,6 +59,7 @@ const formSchema = z
       });
     }
 
+    // CHECK NUMBER OF EMPLOYEES IF ACCOUNT TYPE IS COMPANY
     if (
       data.accountType === "Company" &&
       (!data.numberOfEmployees || data.numberOfEmployees < 0)
@@ -75,10 +67,51 @@ const formSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["numberOfEmployees"],
-        message: "number of employees is grater than 0",
+        message: "number of employees must be greater than 0",
       });
     }
   });
+
+const passwordSchema = z
+  .object({
+    password: z.string().min(6, "password must be at least 6 characters"),
+    // .refine((password) => {
+    //   // must contain one uppercase or lowercase letter, one number and one special character
+    //   const regex =
+    //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    //   return regex.test(password);
+    // }),
+
+    passwordConfirm: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    // CHECK PASSWORD MATCH
+    if (data.password !== data.passwordConfirm) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["passwordConfirm"],
+        message: "passwords do not match",
+      });
+    }
+  });
+
+const baseSchema = z
+  .object({
+    email: z.string().email("invalid email"),
+
+    dob: z.date().refine((date) => {
+      const today = new Date();
+      const eighteenYearsAgo = new Date(
+        today.getFullYear() - 1,
+        today.getMonth(),
+        today.getDate()
+      );
+      return date <= eighteenYearsAgo;
+    }, "you must be at least 18 years old"),
+  })
+  .superRefine((data, ctx) => {});
+
+const formSchema = baseSchema.and(accountTypeSchema).and(passwordSchema);
 
 export default function SignUpPage() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -157,25 +190,6 @@ export default function SignUpPage() {
                   </FormItem>
                 )}
               />
-              {/* 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="*********"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
 
               {accountType === "Company" && (
                 <>
@@ -245,11 +259,50 @@ export default function SignUpPage() {
                           fixedWeeks
                           weekStartsOn={1}
                           fromDate={dobFormDate}
-                          // toDate={new Date()}
+                          toDate={new Date()}
                           captionLayout="dropdown-buttons"
                         />
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>password</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        placeholder="*********"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* confirm password  */}
+
+              <FormField
+                control={form.control}
+                name="passwordConfirm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>confirm password</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        placeholder="*********"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
