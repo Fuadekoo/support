@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Card,
@@ -42,12 +43,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useRouter } from "next/navigation"; //
 
 const accountTypeSchema = z
   .object({
     accountType: z.enum(["personal", "Company"]),
     companyName: z.string().optional(),
     numberOfEmployees: z.coerce.number().optional(),
+    acceptTerms: z
+      .boolean({
+        required_error: "you must accept the terms and conditions",
+      })
+      .refine((checked) => checked, "you must accept the terms and conditions"),
   })
   .superRefine((data, ctx) => {
     // CHECK COMPANY NAME IF ACCOUNT TYPE IS COMPANY
@@ -114,6 +121,7 @@ const baseSchema = z
 const formSchema = baseSchema.and(accountTypeSchema).and(passwordSchema);
 
 export default function SignUpPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -125,9 +133,9 @@ export default function SignUpPage() {
     },
   });
 
-  const handleSubmit = () => {
-    console.log("Form Data:", form.getValues());
-    console.log("hello");
+  const handleSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log("Form Data:", data);
+    router.push("/dashboard");
   };
 
   const accountType = form.watch("accountType");
@@ -303,6 +311,39 @@ export default function SignUpPage() {
                       />
                     </FormControl>
 
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="acceptTerms"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center space-x-2 gap-2">
+                      <FormControl>
+                        <Checkbox
+                          id="acceptTerms"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel
+                        htmlFor="acceptTerms"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        I accept the terms and conditions
+                      </FormLabel>
+                    </div>
+                    <FormDescription>
+                      By Signing up you agree to our{" "}
+                      <Link
+                        href={"/terms"}
+                        className="text-primary hover:underline"
+                      >
+                        terms and conditions
+                      </Link>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

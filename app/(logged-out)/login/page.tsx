@@ -25,6 +25,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useRouter } from "next/router";
 
 const formSchema = z.object({
   email: z.string().email("invalid email"),
@@ -32,16 +33,20 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
+      
     },
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = (data: z.infer<typeof formSchema>) => {
     console.log("login successfully submitted");
+    router.push("/dashboard");
+    console.log(data);
   };
   return (
     <>
