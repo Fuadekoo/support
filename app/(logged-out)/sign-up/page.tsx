@@ -138,6 +138,7 @@ export default function SignUpPage() {
     router.push("/dashboard");
   };
 
+  const acceptTerms = form.watch("acceptTerms");
   const accountType = form.watch("accountType");
   const dobFormDate = new Date();
   dobFormDate.setFullYear(dobFormDate.getFullYear() - 120);
@@ -349,7 +350,12 @@ export default function SignUpPage() {
                 )}
               />
 
-              <Button type="submit" className="mt-4" onClick={handleSubmit}>
+              <Button
+                type="submit"
+                className="mt-4"
+                onClick={handleSubmit}
+                disabled={!acceptTerms}
+              >
                 Sign Up
               </Button>
             </form>
