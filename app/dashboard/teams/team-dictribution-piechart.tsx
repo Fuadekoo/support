@@ -1,7 +1,7 @@
 import React from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-function TeamDistributionPieChat() {
+export default function TeamDistributionPieChat() {
   const data = [
     { name: "Engineering", value: 500, color: "#4F8A8B" },
     { name: "Design", value: 250, color: "#FBD46D" },
@@ -22,5 +22,3 @@ function TeamDistributionPieChat() {
     </div>
   );
 }
-
-export default TeamDistributionPieChat;
