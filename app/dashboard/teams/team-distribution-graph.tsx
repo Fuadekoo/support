@@ -23,13 +23,16 @@ const data = [
 export default function TeamDistributionGraph() {
   return (
     <div style={{ width: "100%", height: "400px" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+      <ResponsiveContainer width={"100%"} height="100%">
+        <LineChart
+          data={data}
+          className="[$_.recharts-tooltip-cursor]:fill-white/10 dark:[$_.recharts-tooltip-cursor]:bg-black/5"
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
-          <Legend />
+          <Legend formatter={(value) => <span>{value}</span>} />
           <Line
             type="monotone"
             dataKey="sales"
