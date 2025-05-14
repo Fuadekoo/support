@@ -1,6 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
 import React from "react";
+import TeamStats from "./teams/team-stats";
 import EmployeesStats from "./employees/employees-stats";
 
 function Page() {
@@ -13,9 +14,11 @@ function Page() {
       <TabsContent value="employees">
         <EmployeesStats />
       </TabsContent>
-      <TabsContent value="teams">teams tab view</TabsContent>
+      <TabsContent value="teams">
+        <TeamStats />
+      </TabsContent>
     </Tabs>
   );
-} 
+}
 
 export default Page;

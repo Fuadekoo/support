@@ -103,11 +103,10 @@ export default function EmployeesStats() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <LaptopIcon />
-            <span> employee wirk location trends</span>
+            <span> employee work location trends</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          {/* <h1>thi is </h1> */}
+        <CardContent className="pl-0">
           <WorkLocationTrends />
         </CardContent>
       </Card>
