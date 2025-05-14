@@ -1,3 +1,4 @@
+"use client";
 import { Tooltip } from "@/components/ui/tooltip";
 import React from "react";
 import {

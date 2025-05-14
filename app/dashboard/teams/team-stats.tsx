@@ -122,7 +122,7 @@ export default function TeamStats() {
         <CardContent>
           <TeamDistributionGraph />
         </CardContent>
-        <CardFooter>this i sa footer</CardFooter>
+        <CardFooter>this is a footer</CardFooter>
       </Card>
     </>
   );
